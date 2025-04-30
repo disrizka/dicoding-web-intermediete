@@ -1,7 +1,6 @@
 import CONFIG from '../config';
 
 const ENDPOINTS = {
-  ENDPOINT: `${CONFIG.BASE_URL}/your/endpoint/here`,
   REGISTER: `${CONFIG.BASE_URL}/register`,
   LOGIN: `${CONFIG.BASE_URL}/login`,
   STORIES :`${CONFIG.BASE_URL}/stories`,

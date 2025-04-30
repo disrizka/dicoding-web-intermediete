@@ -8,6 +8,17 @@ export default class HomePage {
       <section class="container">
         <h1>Story App</h1>
         
+        <div class="guest-only welcome-section">
+          <div class="welcome-content">
+            <h2>Share Your Stories</h2>
+            <p>Join our community to share your experiences and discover amazing stories from around the world.</p>
+            <div class="welcome-buttons">
+              <a href="#/login" class="btn btn-primary">Login</a>
+              <a href="#/register" class="btn btn-secondary">Register</a>
+            </div>
+          </div>
+        </div>
+        
         <div class="story-container">
           <h2>Stories</h2>
           <div id="story-list" class="story-list">
@@ -30,17 +41,15 @@ export default class HomePage {
 
   async _loadStories() {
     try {
-      // const token = localStorage.getItem('token');
-      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLTREWDBlS1NseFhNMWRpMXkiLCJpYXQiOjE3NDU5Nzg1NjF9.CDQFrASiZz1cKy11rKCuDrFzWDa6_L-bQ--VmmKHH9c";
-      localStorage.setItem('token', token);
-      const tokenLS = localStorage.getItem('token');
+      // Get token from localStorage
+      const token = localStorage.getItem('token');
       const storyListElement = document.getElementById('story-list');
       
       // Show loading state
       storyListElement.innerHTML = '<p>Loading stories...</p>';
       
       // Fetch stories using API module
-      const response = await getStories(tokenLS || '');
+      const response = await getStories(token || '');
       
       if (response.error) {
         storyListElement.innerHTML = `<p class="error-message">${response.message || 'Failed to load stories'}</p>`;
@@ -62,6 +71,15 @@ export default class HomePage {
         // Append the story with its address to the list
         storyListElement.innerHTML += this._createStoryItemTemplate(story, address);
       }
+
+      // Add click event listeners to story items
+      const storyItems = storyListElement.querySelectorAll('.story-item');
+      storyItems.forEach(item => {
+        item.addEventListener('click', () => {
+          const storyId = item.dataset.id;
+          window.location.hash = `#/story/${storyId}`;
+        });
+      });
     } catch (error) {
       console.error('Error loading stories:', error);
       document.getElementById('story-list').innerHTML = '<p class="error-message">Failed to load stories</p>';
@@ -79,18 +97,13 @@ export default class HomePage {
         return;
       }
   
-      // Log map element to verify it exists
-      console.log('Map element:', mapElement);
-  
-      // const token = localStorage.getItem('token');
-      const token= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLTREWDBlS1NseFhNMWRpMXkiLCJpYXQiOjE3NDU5Nzg1NjF9.CDQFrASiZz1cKy11rKCuDrFzWDa6_L-bQ--VmmKHH9c";
-      console.log('Using token:', token ? 'Token exists' : 'No token found');
+      // Get token from localStorage
+      const token = localStorage.getItem('token');
       
       // Try using the API directly instead of the wrapper function for debugging
       try {
         // First attempt: Try using the function from api.js
         const response = await getStories(token || '');
-        console.log('API response from getStories:', response);
         
         // Detailed checking of response
         if (response.error) {
@@ -112,15 +125,11 @@ export default class HomePage {
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
-        
-        console.log('Map initialized');
   
         // Add markers for stories with location data
         const storiesWithLocation = response.listStory.filter(story => story.lat && story.lon);
-        console.log('Stories with location:', storiesWithLocation.length);
         
         if (storiesWithLocation.length === 0) {
-          console.log('No stories with location found');
           // Don't replace the map with text, just show a message
           const noLocationsMessage = document.createElement('div');
           noLocationsMessage.innerHTML = '<p class="map-message">No story locations available</p>';
@@ -134,65 +143,19 @@ export default class HomePage {
           mapElement.appendChild(noLocationsMessage);
         } else {
           storiesWithLocation.forEach(story => {
-            console.log('Adding marker for story:', story.id, 'at', story.lat, story.lon);
             const marker = L.marker([story.lat, story.lon]).addTo(map);
             marker.bindPopup(`
               <strong>${story.name}</strong>
               <p>${story.description}</p>
               <small>${new Date(story.createdAt).toLocaleString()}</small>
+              <br>
+              <a href="#/story/${story.id}" class="map-story-link">View Story</a>
             `);
           });
         }
       } catch (apiError) {
         console.error('Error calling API directly:', apiError);
-        
-        // Fallback: Try direct fetch as a backup approach
-        console.log('Attempting direct fetch as fallback...');
-        try {
-          const directResponse = await fetch('https://story-api.dicoding.dev/v1/stories?location=1', {
-            headers: token ? { Authorization: `Bearer ${token}` } : {}
-          });
-          const directData = await directResponse.json();
-          console.log('Direct fetch response:', directData);
-          
-          if (directData.error) {
-            mapElement.innerHTML = `<p class="error-message">API error: ${directData.message || 'Unknown error'}</p>`;
-            return;
-          }
-          
-          // Initialize map with direct fetch data
-          const map = L.map('map').setView([-2.5, 117], 4.5);
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-          }).addTo(map);
-          
-          // Add markers from direct fetch
-          const validStories = directData.listStory?.filter(story => story.lat && story.lon) || [];
-          if (validStories.length === 0) {
-            const noLocationsMessage = document.createElement('div');
-            noLocationsMessage.innerHTML = '<p class="map-message">No story locations available</p>';
-            noLocationsMessage.style.position = 'absolute';
-            noLocationsMessage.style.zIndex = '1000';
-            noLocationsMessage.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
-            noLocationsMessage.style.padding = '10px';
-            noLocationsMessage.style.borderRadius = '5px';
-            noLocationsMessage.style.top = '10px';
-            noLocationsMessage.style.left = '10px';
-            mapElement.appendChild(noLocationsMessage);
-          } else {
-            validStories.forEach(story => {
-              const marker = L.marker([story.lat, story.lon]).addTo(map);
-              marker.bindPopup(`
-                <strong>${story.name}</strong>
-                <p>${story.description}</p>
-                <small>${new Date(story.createdAt).toLocaleString()}</small>
-              `);
-            });
-          }
-        } catch (directFetchError) {
-          console.error('Direct fetch also failed:', directFetchError);
-          mapElement.innerHTML = '<p class="error-message">Failed to load map data after multiple attempts</p>';
-        }
+        mapElement.innerHTML = '<p class="error-message">Failed to load map data</p>';
       }
     } catch (error) {
       console.error('Overall map initialization error:', error);
@@ -200,13 +163,9 @@ export default class HomePage {
     }
   }
 
-  async _getAddress(){
-
-  }
-
   _createStoryItemTemplate(story, address) {
     return `
-      <article class="story-item">
+      <article class="story-item" data-id="${story.id}">
         <img 
           src="${story.photoUrl}" 
           alt="Story by ${story.name}" 
