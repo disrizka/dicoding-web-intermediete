@@ -55,3 +55,14 @@ document.addEventListener('click', (e) => {
     location.reload(); // Reset state dan class authenticated
   }
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const token = localStorage.getItem("token");
+  const logoutMenu = document.getElementById("logout-menu");
+  const addStoryMenu = document.getElementById("add-story-menu");
+
+  if (token) {
+    logoutMenu.style.display = "inline-block";
+    addStoryMenu.style.display = "inline-block";
+  }
+});

@@ -22,18 +22,18 @@
     <title>Story App</title>
   </head>
   <body>
+    <a href="#main-content" class="skip-to-content">Skip to Content</a>
     <header>
       <div class="main-header container">
         <a class="brand-name" href="#/">Story App</a>
-
+        
         <nav id="navigation-drawer" class="navigation-drawer">
           <ul id="nav-list" class="nav-list">
             <li><a href="#/">Home</a></li>
             <li><a href="#/about">About</a></li>
-            <li id="logout-menu" style="display: none">
-              <a href="#" id="logout-button">Logout</a>
-            </li>
-          </ul>
+            <li id="add-story-menu" style="display: none;"><a href="#/add-story">Add Story</a></li>
+            <li id="logout-menu" style="display: none;"><a href="#" id="logout-button">Logout</a></li>
+          </ul>          
         </nav>
 
         <button id="drawer-button" class="drawer-button">☰</button>
@@ -43,26 +43,35 @@
     <main id="main-content" class="main-content"></main>
 
     <script>
-      document.addEventListener("DOMContentLoaded", () => {
+      function showMenusIfLoggedIn() {
         const token = localStorage.getItem("token");
         const logoutMenu = document.getElementById("logout-menu");
-
-        // Tampilkan tombol logout kalau sudah login
+        const addStoryMenu = document.getElementById("add-story-menu");
+    
         if (token) {
           logoutMenu.style.display = "inline-block";
+          addStoryMenu.style.display = "inline-block";
         } else {
           logoutMenu.style.display = "none";
+          addStoryMenu.style.display = "none";
         }
+      }
+    
+      document.addEventListener("DOMContentLoaded", () => {
+        showMenusIfLoggedIn();
       });
-
-      // Event listener logout
+    
       document.addEventListener("click", (e) => {
         if (e.target.id === "logout-button") {
           localStorage.clear();
           window.location.hash = "#/login";
-          location.reload(); // reset UI
+          location.reload();
         }
       });
+    
+      // Bisa diakses dari file JS lain
+      window.showMenusIfLoggedIn = showMenusIfLoggedIn;
     </script>
+    
   </body>
 </html>

@@ -77,10 +77,9 @@ export default class LoginPage {
         localStorage.setItem('userId', response.loginResult.userId);
         localStorage.setItem('name', response.loginResult.name);
 
-        // ✅ Tampilkan tombol logout langsung tanpa reload
-        const logoutMenu = document.getElementById('logout-menu');
-        if (logoutMenu) {
-          logoutMenu.style.display = 'inline-block';
+        // ✅ Tampilkan tombol navigasi tanpa reload
+        if (typeof window.showMenusIfLoggedIn === 'function') {
+          window.showMenusIfLoggedIn(); // tampilkan logout & add story
         }
 
         document.body.classList.add('authenticated');
