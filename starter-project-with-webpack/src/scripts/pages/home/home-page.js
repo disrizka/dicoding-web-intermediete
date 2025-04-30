@@ -4,52 +4,67 @@ import { showFormattedDate } from "../../utils";
 
 export default class HomePage {
   async render() {
+    const isAuthenticated = !!localStorage.getItem('token');
+
     return `
       <section class="container">
         <h1>Story App</h1>
         
-        <div class="guest-only welcome-section">
-          <div class="welcome-content">
-            <h2>Share Your Stories</h2>
-            <p>Join our community to share your experiences and discover amazing stories from around the world.</p>
-            <div class="welcome-buttons">
-              <a href="#/login" class="btn btn-primary">Login</a>
-              <a href="#/register" class="btn btn-secondary">Register</a>
+        ${!isAuthenticated ? `
+          <div class="welcome-section">
+            <div class="welcome-content">
+              <h2>Share Your Stories</h2>
+              <p>Join our community to share your experiences and discover amazing stories from around the world.</p>
+              <div class="welcome-buttons">
+                <a href="#/login" class="btn btn-primary">Login</a>
+                <a href="#/register" class="btn btn-secondary">Register</a>
+              </div>
             </div>
           </div>
-        </div>
-        
-        <div class="story-container">
-          <h2>Stories</h2>
-          <div id="story-list" class="story-list">
-            <p id="loading">Loading stories...</p>
+        ` : `
+          <div class="story-container">
+            <h2>Stories</h2>
+            <div id="story-list" class="story-list">
+              <p id="loading">Loading stories...</p>
+            </div>
           </div>
-        </div>
 
-        <div class="map-container">
-          <h2>Story Locations</h2>
-          <div id="map" class="map"></div>
-        </div>
+          <div class="map-container">
+            <h2>Story Locations</h2>
+            <div id="map" class="map"></div>
+          </div>
+        `}
       </section>
     `;
   }
 
   async afterRender() {
-    await this._loadStories();
-    await this._initMap();
+    const isAuthenticated = !!localStorage.getItem('token');
+
+    if (isAuthenticated) {
+      await this._loadStories();
+      await this._initMap();
+    }
   }
 
   async _loadStories() {
     try {
       // Get token from localStorage
       const token = localStorage.getItem('token');
+      
+      if (!token) {
+        // Redirect to login if no token
+        window.location.hash = '#/login';
+        return;
+      }
+      
       const storyListElement = document.getElementById('story-list');
       
       // Show loading state
       storyListElement.innerHTML = '<p>Loading stories...</p>';
       
       // Fetch stories using API module
-      const response = await getStories(token || '');
+      const response = await getStories(token);
       
       if (response.error) {
         storyListElement.innerHTML = `<p class="error-message">${response.message || 'Failed to load stories'}</p>`;
@@ -100,10 +115,16 @@ export default class HomePage {
       // Get token from localStorage
       const token = localStorage.getItem('token');
       
+      if (!token) {
+        // Redirect to login if no token
+        window.location.hash = '#/login';
+        return;
+      }
+      
       // Try using the API directly instead of the wrapper function for debugging
       try {
         // First attempt: Try using the function from api.js
-        const response = await getStories(token || '');
+        const response = await getStories(token);
         
         // Detailed checking of response
         if (response.error) {

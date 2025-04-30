@@ -289,4 +289,22 @@ h1, h2 {
   .story-list {
     grid-template-columns: 1fr;
   }
+  .nav-list {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+  }
+  
+  .nav-list li a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 12px;
+    display: inline-block;
+  }
+  
+  .nav-list li a:hover {
+    background-color: #2e3a59;
+    border-radius: 5px;
+  }
+  
 }

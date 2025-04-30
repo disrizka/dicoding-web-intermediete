@@ -51,25 +51,19 @@ export default class LoginPage {
     
     loginForm.addEventListener('submit', async (event) => {
       event.preventDefault();
-      
-      // Clear previous error message
       errorMessage.textContent = '';
       
       try {
-        // Get form data
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         
-        // Show loading state
         const submitButton = loginForm.querySelector('button[type="submit"]');
         const originalButtonText = submitButton.textContent;
         submitButton.textContent = 'Logging in...';
         submitButton.disabled = true;
         
-        // Call API
         const response = await login(email, password);
         
-        // Restore button state
         submitButton.textContent = originalButtonText;
         submitButton.disabled = false;
         
@@ -78,22 +72,24 @@ export default class LoginPage {
           return;
         }
         
-        // Save auth data to localStorage
+        // Simpan token ke localStorage
         localStorage.setItem('token', response.loginResult.token);
         localStorage.setItem('userId', response.loginResult.userId);
         localStorage.setItem('name', response.loginResult.name);
-        
-        // Add authenticated class to body
+
+        // ✅ Tampilkan tombol logout langsung tanpa reload
+        const logoutMenu = document.getElementById('logout-menu');
+        if (logoutMenu) {
+          logoutMenu.style.display = 'inline-block';
+        }
+
         document.body.classList.add('authenticated');
-        
-        // Redirect to home page
         window.location.hash = '#/';
         
       } catch (error) {
         console.error('Login error:', error);
         errorMessage.textContent = 'An error occurred during login. Please try again.';
         
-        // Restore button state
         const submitButton = loginForm.querySelector('button[type="submit"]');
         submitButton.textContent = 'Login';
         submitButton.disabled = false;
