@@ -1,70 +1,33 @@
-// index.js
+// src/scripts/index.js
 import '../styles/styles.css';
-import App from './pages/app';
+import routes from './routes/routes.js';
 
-const checkAuthentication = () => {
-  const token = localStorage.getItem('token');
-  const isAuthenticated = !!token;
-  document.body.classList.toggle('authenticated', isAuthenticated);
-  return isAuthenticated;
-};
+const renderCurrentRoute = async () => {
+  const hash = window.location.hash.toLowerCase() || '#/login';
+  const view = routes[hash];
 
-const showMenusIfLoggedIn = () => {
-  const token = localStorage.getItem("token");
-  const logoutMenu = document.getElementById("logout-menu");
-  const addStoryMenu = document.getElementById("add-story-menu");
+  console.log('HASH:', hash);
+  console.log('VIEW:', view);
 
-  if (logoutMenu && addStoryMenu) {
-    logoutMenu.style.display = token ? "inline-block" : "none";
-    addStoryMenu.style.display = token ? "inline-block" : "none";
+  if (!view || typeof view.getTemplate !== 'function') {
+    document.getElementById('main-content').innerHTML = '<h2>404 - Page Not Found</h2>';
+    return;
+  }
+
+  const html = await view.getTemplate();
+  document.getElementById('main-content').innerHTML = html;
+
+  // pastikan method ada
+  if (typeof view.setupUI === 'function') {
+    view.setupUI();
+  } else {
+    console.warn('setupUI() not found in view');
   }
 };
 
-const handleRouting = () => {
-  const isAuthenticated = checkAuthentication();
-  const currentHash = window.location.hash;
-
-  const publicRoutes = ['#/register', '#/about', '#/login'];
-
-  if (!isAuthenticated && !publicRoutes.includes(currentHash)) {
-    window.location.hash = '#/login';
-    return false;
-  }
-
-  if (isAuthenticated && (currentHash === '#/login' || currentHash === '#/register')) {
-    window.location.hash = '#/';
-    return false;
-  }
-
-  return true;
-};
-
-document.addEventListener('DOMContentLoaded', async () => {
-  const app = new App({
-    content: document.querySelector('#main-content'),
-    drawerButton: document.querySelector('#drawer-button'),
-    navigationDrawer: document.querySelector('#navigation-drawer'),
-  });
-
-  showMenusIfLoggedIn();
-
-  if (handleRouting()) {
-    await app.renderPage();
-  }
-
-  window.addEventListener('hashchange', async () => {
-    showMenusIfLoggedIn();
-
-    if (handleRouting()) {
-      await app.renderPage();
-    }
-  });
-
-  document.addEventListener('click', (e) => {
-    if (e.target.id === 'logout-button') {
-      localStorage.clear();
-      window.location.hash = '#/login';
-      location.reload();
-    }
-  });
+window.addEventListener('DOMContentLoaded', async () => {
+  console.log('DOM loaded');
+  await renderCurrentRoute();
 });
+
+window.addEventListener('hashchange', renderCurrentRoute);

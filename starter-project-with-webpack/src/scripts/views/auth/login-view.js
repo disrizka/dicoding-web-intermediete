@@ -4,26 +4,24 @@ export default class LoginView {
       <section class="container">
         <div class="auth-container">
           <h2>Login</h2>
-          <div class="auth-form-container">
-            <form id="loginForm" class="auth-form">
-              <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" required placeholder="Enter your email">
-              </div>
-              <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" required placeholder="Enter your password">
-              </div>
-              <div class="form-group">
-                <button type="submit" class="btn btn-primary" id="loginButton">Login</button>
-                <div id="loading" style="display: none;">Loading...</div>
-              </div>
-              <p id="errorMessage" class="error-message" style="display: none;"></p>
-            </form>
-            <p class="auth-redirect">
-              Don't have an account? <a href="#/register">Register here</a>
-            </p>
-          </div>
+          <form id="loginForm" class="auth-form">
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" required />
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" id="password" required />
+            </div>
+            <div class="form-group">
+              <button type="submit" id="loginButton">Login</button>
+              <div id="loading" style="display: none;">Loading...</div>
+            </div>
+            <p id="errorMessage" class="error-message" style="display: none;"></p>
+          </form>
+          <p class="auth-redirect">
+            Don't have an account? <a href="#/register">Register here</a>
+          </p>
         </div>
       </section>
     `;
@@ -67,10 +65,5 @@ export default class LoginView {
   clearError() {
     this.errorMessage.textContent = '';
     this.errorMessage.style.display = 'none';
-  }
-
-  resetForm() {
-    this.form.reset();
-    this.clearError();
   }
 }

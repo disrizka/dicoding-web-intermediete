@@ -4,33 +4,29 @@ export default class RegisterView {
       <section class="container">
         <div class="auth-container">
           <h2>Register</h2>
-          <div class="auth-form-container">
-            <form id="registerForm" class="auth-form">
-              <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" id="name" required>
-              </div>
-              <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" required>
-              </div>
-              <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" required 
-                       minlength="6" 
-                       title="Password must be at least 6 characters">
-              </div>
-              <div class="form-group">
-                <button type="submit" class="btn btn-primary" id="registerButton">Register</button>
-                <div id="loading" style="display: none;">Loading...</div>
-              </div>
-              <p id="errorMessage" class="error-message" style="display: none;"></p>
-              <p id="successMessage" class="success-message" style="display: none;"></p>
-            </form>
-            <p class="auth-redirect">
-              Already have an account? <a href="#/login">Login here</a>
-            </p>
-          </div>
+          <form id="registerForm" class="auth-form">
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" id="name" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" required />
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" id="password" required minlength="6" />
+            </div>
+            <div class="form-group">
+              <button type="submit" id="registerButton">Register</button>
+              <div id="loading" style="display: none;">Loading...</div>
+            </div>
+            <p id="errorMessage" class="error-message" style="display: none;"></p>
+            <p id="successMessage" class="success-message" style="display: none;"></p>
+          </form>
+          <p class="auth-redirect">
+            Already have an account? <a href="#/login">Login</a>
+          </p>
         </div>
       </section>
     `;
@@ -48,8 +44,8 @@ export default class RegisterView {
   }
 
   setRegisterFormSubmitHandler(handler) {
-    this.form.addEventListener('submit', (event) => {
-      event.preventDefault();
+    this.form.addEventListener('submit', (e) => {
+      e.preventDefault();
       const name = this.nameInput.value.trim();
       const email = this.emailInput.value.trim();
       const password = this.passwordInput.value;

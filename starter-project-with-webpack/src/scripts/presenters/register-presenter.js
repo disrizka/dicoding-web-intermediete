@@ -2,11 +2,6 @@ export default class RegisterPresenter {
     constructor({ view, model }) {
       this._view = view;
       this._model = model;
-  
-      this._bindEvents();
-    }
-  
-    _bindEvents() {
       this._view.setRegisterFormSubmitHandler(this._onRegister.bind(this));
     }
   
@@ -15,8 +10,8 @@ export default class RegisterPresenter {
         this._view.clearError();
         this._view.showLoading();
   
-        // Validate input
-        if (!this._validateInput(name, email, password)) {
+        if (!name || !email || !password) {
+          this._view.showError('Semua field wajib diisi.');
           this._view.hideLoading();
           return;
         }
@@ -26,51 +21,18 @@ export default class RegisterPresenter {
         this._view.hideLoading();
   
         if (response.error) {
-          this._view.showError(response.message || 'Registration failed. Please try again.');
+          this._view.showError(response.message);
           return;
         }
   
-        this._view.showSuccess('Registration successful! Redirecting to login...');
+        this._view.showSuccess('Registrasi berhasil! Redirect ke login...');
         this._view.resetForm();
-  
-        // Redirect to login page after successful registration
         setTimeout(() => {
           window.location.hash = '#/login';
         }, 2000);
       } catch (error) {
         this._view.hideLoading();
-        this._view.showError(error.message || 'Registration failed. Please try again.');
+        this._view.showError(error.message);
       }
-    }
-  
-    _validateInput(name, email, password) {
-      if (!name || name.trim() === '') {
-        this._view.showError('Name is required');
-        return false;
-      }
-  
-      if (!email || email.trim() === '') {
-        this._view.showError('Email is required');
-        return false;
-      }
-  
-      // Basic email validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        this._view.showError('Please enter a valid email address');
-        return false;
-      }
-  
-      if (!password) {
-        this._view.showError('Password is required');
-        return false;
-      }
-  
-      if (password.length < 6) {
-        this._view.showError('Password must be at least 6 characters');
-        return false;
-      }
-  
-      return true;
     }
   }
