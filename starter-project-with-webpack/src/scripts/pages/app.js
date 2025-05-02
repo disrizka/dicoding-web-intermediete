@@ -38,17 +38,15 @@ class App {
   
     if (document.startViewTransition) {
       document.startViewTransition(() => {
-        // Jalankan rendering setelah transisi, dengan delay untuk Leaflet
         return new Promise(async (resolve) => {
           this.#content.innerHTML = await page.render();
           await page.afterRender();
   
-          // 🛠️ Delay kecil agar Leaflet bisa hitung ukuran dengan benar
           setTimeout(() => {
             const mapEl = document.getElementById('map');
             if (mapEl && mapEl._leaflet_id != null && window.L) {
               try {
-                L.map(mapEl)._onResize(); // trigger redraw
+                L.map(mapEl)._onResize(); 
               } catch (e) {}
             }
             resolve();

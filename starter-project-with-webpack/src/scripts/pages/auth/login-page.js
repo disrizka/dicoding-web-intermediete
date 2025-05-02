@@ -72,14 +72,14 @@ export default class LoginPage {
           return;
         }
         
-        // Simpan token ke localStorage
+     
         localStorage.setItem('token', response.loginResult.token);
         localStorage.setItem('userId', response.loginResult.userId);
         localStorage.setItem('name', response.loginResult.name);
 
-        // ✅ Tampilkan tombol navigasi tanpa reload
+     
         if (typeof window.showMenusIfLoggedIn === 'function') {
-          window.showMenusIfLoggedIn(); // tampilkan logout & add story
+          window.showMenusIfLoggedIn(); 
         }
 
         document.body.classList.add('authenticated');

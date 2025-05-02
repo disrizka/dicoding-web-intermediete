@@ -62,12 +62,11 @@ export default class AddStoryPage {
       canvas.toBlob((blob) => {
         imageBlob = blob;
         statusEl.textContent = "Image captured ✅";
-        // Stop camera stream after capture
         stream.getTracks().forEach(track => track.stop());
       }, "image/jpeg");
     });
 
-    // Leaflet map
+ 
     const map = L.map("map").setView([-2.5, 117], 4.5);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; OpenStreetMap contributors',
@@ -120,5 +119,13 @@ export default class AddStoryPage {
         message.textContent = "Failed to submit story.";
       }
     });
+
+    window.addEventListener("hashchange", () => {
+        if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+        console.log("Camera stream stopped on page change.");
+        }
+    });
+  
   }
 }

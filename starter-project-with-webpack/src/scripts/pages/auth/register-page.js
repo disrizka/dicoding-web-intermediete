@@ -66,26 +66,25 @@ export default class RegisterPage {
     registerForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       
-      // Clear previous messages
+     
       errorMessage.textContent = '';
       successMessage.textContent = '';
       
       try {
-        // Get form data
         const name = document.getElementById('name').value;
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         
-        // Show loading state
+      
         const submitButton = registerForm.querySelector('button[type="submit"]');
         const originalButtonText = submitButton.textContent;
         submitButton.textContent = 'Registering...';
         submitButton.disabled = true;
         
-        // Call API
+       
         const response = await signUp(name, email, password);
         
-        // Restore button state
+       
         submitButton.textContent = originalButtonText;
         submitButton.disabled = false;
         
@@ -94,13 +93,13 @@ export default class RegisterPage {
           return;
         }
         
-        // Show success message
+      
         successMessage.textContent = 'Registration successful! Redirecting to login...';
         
-        // Reset form
+    
         registerForm.reset();
         
-        // Redirect to login page after short delay
+    
         setTimeout(() => {
           window.location.hash = '#/login';
         }, 2000);
@@ -109,7 +108,7 @@ export default class RegisterPage {
         console.error('Registration error:', error);
         errorMessage.textContent = 'An error occurred during registration. Please try again.';
         
-        // Restore button state
+      
         const submitButton = registerForm.querySelector('button[type="submit"]');
         submitButton.textContent = 'Register';
         submitButton.disabled = false;

@@ -19,8 +19,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const isAuthenticated = checkAuthentication();
   const currentHash = window.location.hash;
 
-  // Redirect logic saat pertama kali load
-  if (!isAuthenticated && currentHash !== '#/register') {
+  // ✅ Allow #/register and #/about even if not logged in
+  if (!isAuthenticated && currentHash !== '#/register' && currentHash !== '#/about') {
     window.location.hash = '#/login';
   } else if (isAuthenticated && (currentHash === '#/login' || currentHash === '#/register')) {
     window.location.hash = '#/';
@@ -28,17 +28,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await app.renderPage();
 
-  // Navigasi hashchange
   window.addEventListener('hashchange', async () => {
     const isAuthenticated = checkAuthentication();
     const currentHash = window.location.hash;
 
-    // Redirect jika belum login, tapi bukan ke halaman register
-    if (!isAuthenticated && currentHash !== '#/register') {
+    // ✅ Allow access to register & about without login
+    if (!isAuthenticated && currentHash !== '#/register' && currentHash !== '#/about') {
       window.location.hash = '#/login';
     }
 
-    // Redirect jika sudah login tapi coba akses login/register
     if (isAuthenticated && (currentHash === '#/login' || currentHash === '#/register')) {
       window.location.hash = '#/';
     }
@@ -47,15 +45,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 });
 
-// ✅ Tambahkan tombol logout listener
+// ✅ Logout button
 document.addEventListener('click', (e) => {
   if (e.target.id === 'logout-button') {
     localStorage.clear();
     window.location.hash = '#/login';
-    location.reload(); // Reset state dan class authenticated
+    location.reload();
   }
 });
 
+// ✅ Tampilkan tombol navigasi jika sudah login
 document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("token");
   const logoutMenu = document.getElementById("logout-menu");

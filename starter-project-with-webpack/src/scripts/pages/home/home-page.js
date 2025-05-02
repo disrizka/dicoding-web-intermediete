@@ -40,12 +40,16 @@ export default class HomePage {
 
   async afterRender() {
     const isAuthenticated = !!localStorage.getItem('token');
-
+  
     if (isAuthenticated) {
       await this._loadStories();
-      await this._initMap();
+  
+      if (document.getElementById('map')) {
+        await this._initMap();
+      }
     }
   }
+  
 
   async _loadStories() {
     try {
@@ -53,7 +57,6 @@ export default class HomePage {
       const token = localStorage.getItem('token');
       
       if (!token) {
-        // Redirect to login if no token
         window.location.hash = '#/login';
         return;
       }
@@ -78,16 +81,12 @@ export default class HomePage {
 
       // Render stories
       storyListElement.innerHTML = '';
-      // Use for...of loop for async operations instead of forEach
       for (const story of response.listStory) {
-        // Wait for address lookup to complete for each story
         const address = await getAddress(story.lat, story.lon);
       
-        // Append the story with its address to the list
         storyListElement.innerHTML += this._createStoryItemTemplate(story, address);
       }
 
-      // Add click event listeners to story items
       const storyItems = storyListElement.querySelectorAll('.story-item');
       storyItems.forEach(item => {
         item.addEventListener('click', () => {
@@ -105,28 +104,26 @@ export default class HomePage {
     try {
       const mapElement = document.getElementById('map');
       
-      // Check if Leaflet is available
+      
       if (!window.L) {
         mapElement.innerHTML = '<p class="error-message">Map library not loaded</p>';
         console.error('Leaflet library not found. Make sure to include it in your HTML.');
         return;
       }
   
-      // Get token from localStorage
+    
       const token = localStorage.getItem('token');
       
       if (!token) {
-        // Redirect to login if no token
         window.location.hash = '#/login';
         return;
       }
       
-      // Try using the API directly instead of the wrapper function for debugging
+    
       try {
-        // First attempt: Try using the function from api.js
         const response = await getStories(token);
         
-        // Detailed checking of response
+       
         if (response.error) {
           console.error('API returned error:', response.error, response.message);
           mapElement.innerHTML = `<p class="error-message">API error: ${response.message || 'Unknown error'}</p>`;
@@ -139,19 +136,16 @@ export default class HomePage {
           return;
         }
         
-        // If we reach here, we have a valid response with stories
-        
-        // Initialize map
-        const map = L.map('map').setView([-2.5, 117], 4.5); // Indonesia centered
+       
+        const map = L.map('map').setView([-2.5, 117], 4.5); // Indonesia 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
   
-        // Add markers for stories with location data
+      
         const storiesWithLocation = response.listStory.filter(story => story.lat && story.lon);
         
         if (storiesWithLocation.length === 0) {
-          // Don't replace the map with text, just show a message
           const noLocationsMessage = document.createElement('div');
           noLocationsMessage.innerHTML = '<p class="map-message">No story locations available</p>';
           noLocationsMessage.style.position = 'absolute';
