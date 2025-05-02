@@ -1,4 +1,3 @@
-// src/scripts/pages/app.js
 import routes from '../routes/routes';
 
 export default class App {
@@ -24,11 +23,18 @@ export default class App {
   }
 
   async renderPage() {
-    const url = window.location.hash.slice(1).toLowerCase() || '/';
-    const page = routes[url] || routes['/'];
-    
-    const html = await page.render();
-    this._content.innerHTML = html;
-    await page.afterRender();
+    const hash = window.location.hash.toLowerCase() || '#/login';
+    const page = routes[hash] || routes['#/login'];
+  
+    if (typeof page.render === 'function') {
+      const html = await page.render();
+      this._content.innerHTML = html;
+      if (typeof page.afterRender === 'function') {
+        await page.afterRender();
+      }
+    } else {
+      this._content.innerHTML = '<h2>404 - Page Not Found</h2>';
+    }
   }
+  
 }
