@@ -1,24 +1,91 @@
-import RegisterView from './register-view';
-import RegisterPresenter from '../../presenters/register-presenter';
-import AuthModel from '../../models/auth-model';
-import * as api from '../../data/api';
-
-export default class RegisterPage {
-  constructor() {
-    this._view = new RegisterView();
-    this._model = new AuthModel(api);
-    this._presenter = null;
+export default class RegisterView {
+  getTemplate() {
+    return `
+      <section class="container">
+        <div class="auth-container">
+          <h2>Register</h2>
+          <div class="auth-form-container">
+            <form id="registerForm" class="auth-form">
+              <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" required>
+              </div>
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+              </div>
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required 
+                       minlength="6" 
+                       title="Password must be at least 6 characters">
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary" id="registerButton">Register</button>
+                <div id="loading" style="display: none;">Loading...</div>
+              </div>
+              <p id="errorMessage" class="error-message" style="display: none;"></p>
+              <p id="successMessage" class="success-message" style="display: none;"></p>
+            </form>
+            <p class="auth-redirect">
+              Already have an account? <a href="#/login">Login here</a>
+            </p>
+          </div>
+        </div>
+      </section>
+    `;
   }
 
-  async render() {
-    return this._view.getTemplate();
+  setupUI() {
+    this.form = document.getElementById('registerForm');
+    this.nameInput = document.getElementById('name');
+    this.emailInput = document.getElementById('email');
+    this.passwordInput = document.getElementById('password');
+    this.errorMessage = document.getElementById('errorMessage');
+    this.successMessage = document.getElementById('successMessage');
+    this.loadingIndicator = document.getElementById('loading');
+    this.registerButton = document.getElementById('registerButton');
   }
 
-  async afterRender() {
-    this._view.setupUI();
-    this._presenter = new RegisterPresenter({
-      view: this._view,
-      model: this._model,
+  setRegisterFormSubmitHandler(handler) {
+    this.form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const name = this.nameInput.value.trim();
+      const email = this.emailInput.value.trim();
+      const password = this.passwordInput.value;
+      handler(name, email, password);
     });
+  }
+
+  showLoading() {
+    this.loadingIndicator.style.display = 'block';
+    this.registerButton.disabled = true;
+  }
+
+  hideLoading() {
+    this.loadingIndicator.style.display = 'none';
+    this.registerButton.disabled = false;
+  }
+
+  showError(message) {
+    this.errorMessage.textContent = message;
+    this.errorMessage.style.display = 'block';
+    this.successMessage.style.display = 'none';
+  }
+
+  showSuccess(message) {
+    this.successMessage.textContent = message;
+    this.successMessage.style.display = 'block';
+    this.errorMessage.style.display = 'none';
+  }
+
+  clearError() {
+    this.errorMessage.textContent = '';
+    this.errorMessage.style.display = 'none';
+  }
+
+  resetForm() {
+    this.form.reset();
+    this.clearError();
   }
 }
