@@ -1,15 +1,19 @@
-import HomePage from '../pages/home/home-page.js';
-import AboutPage from '../pages/about/about-page.js';
 import LoginPage from '../pages/auth/login-page.js';
 import RegisterPage from '../pages/auth/register-page.js';
-import AddStoryPage from '../pages/story/add-story-page.js';
+import AuthModel from '../models/auth-model.js';
+import LoginPresenter from '../presenters/login-presenter.js';
+import RegisterPresenter from '../presenters/register-presenter.js';
+import * as api from '../data/api.js';
+
+const loginView = new LoginView();
+const registerView = new RegisterView();
+
+new LoginPresenter({ view: loginView, model: new AuthModel(api) });
+new RegisterPresenter({ view: registerView, model: new AuthModel(api) });
 
 const routes = {
-  '/': new HomePage(),
-  '/about': new AboutPage(),
-  '/login': new LoginPage(),          // ✅ Panggil LoginPage, bukan View langsung
-  '/register': new RegisterPage(),
-  '/add-story': new AddStoryPage(),
+  '#/login': new LoginPage(),
+  '#/register': new RegisterPage(),
 };
 
 export default routes;
