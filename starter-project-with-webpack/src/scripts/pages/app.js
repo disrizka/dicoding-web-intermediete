@@ -1,64 +1,34 @@
+// src/scripts/pages/app.js
 import routes from '../routes/routes';
-import { getActiveRoute } from '../routes/url-parser';
 
-class App {
-  #content = null;
-  #drawerButton = null;
-  #navigationDrawer = null;
+export default class App {
+  constructor({ content, drawerButton, navigationDrawer }) {
+    this._content = content;
+    this._drawerButton = drawerButton;
+    this._navigationDrawer = navigationDrawer;
 
-  constructor({ navigationDrawer, drawerButton, content }) {
-    this.#content = content;
-    this.#drawerButton = drawerButton;
-    this.#navigationDrawer = navigationDrawer;
-
-    this._setupDrawer();
+    this._initialAppShell();
   }
 
-  _setupDrawer() {
-    this.#drawerButton.addEventListener('click', () => {
-      this.#navigationDrawer.classList.toggle('open');
+  _initialAppShell() {
+    this._drawerButton.addEventListener('click', (event) => {
+      this._navigationDrawer.classList.toggle('open');
+      event.stopPropagation();
     });
 
     document.body.addEventListener('click', (event) => {
-      if (!this.#navigationDrawer.contains(event.target) && !this.#drawerButton.contains(event.target)) {
-        this.#navigationDrawer.classList.remove('open');
+      if (!this._navigationDrawer.contains(event.target) && event.target !== this._drawerButton) {
+        this._navigationDrawer.classList.remove('open');
       }
-
-      this.#navigationDrawer.querySelectorAll('a').forEach((link) => {
-        if (link.contains(event.target)) {
-          this.#navigationDrawer.classList.remove('open');
-        }
-      });
     });
   }
 
   async renderPage() {
-    const url = getActiveRoute();
-    const page = routes[url];
-  
-    if (document.startViewTransition) {
-      document.startViewTransition(() => {
-        return new Promise(async (resolve) => {
-          this.#content.innerHTML = await page.render();
-          await page.afterRender();
-  
-          setTimeout(() => {
-            const mapEl = document.getElementById('map');
-            if (mapEl && mapEl._leaflet_id != null && window.L) {
-              try {
-                L.map(mapEl)._onResize(); 
-              } catch (e) {}
-            }
-            resolve();
-          }, 300);
-        });
-      });
-    } else {
-      this.#content.innerHTML = await page.render();
-      await page.afterRender();
-    }
+    const url = window.location.hash.slice(1).toLowerCase() || '/';
+    const page = routes[url] || routes['/'];
+    
+    const html = await page.render();
+    this._content.innerHTML = html;
+    await page.afterRender();
   }
-  
 }
-
-export default App;
