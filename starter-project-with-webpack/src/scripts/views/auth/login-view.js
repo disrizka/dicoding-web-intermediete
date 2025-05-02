@@ -8,11 +8,11 @@ export default class LoginView {
             <form id="loginForm" class="auth-form">
               <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" required>
+                <input type="email" id="email" required placeholder="Enter your email">
               </div>
               <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" required>
+                <input type="password" id="password" required placeholder="Enter your password">
               </div>
               <div class="form-group">
                 <button type="submit" class="btn btn-primary" id="loginButton">Login</button>
@@ -50,11 +50,13 @@ export default class LoginView {
   showLoading() {
     this.loadingIndicator.style.display = 'block';
     this.loginButton.disabled = true;
+    this.loginButton.textContent = 'Logging in...';
   }
 
   hideLoading() {
     this.loadingIndicator.style.display = 'none';
     this.loginButton.disabled = false;
+    this.loginButton.textContent = 'Login';
   }
 
   showError(message) {

@@ -23,12 +23,14 @@ export default class LoginPresenter {
   
         const response = await this._model.login(email, password);
   
+        this._view.hideLoading();
+  
         if (response.error) {
-          this._view.hideLoading();
-          this._view.showError(response.message);
+          this._view.showError(response.message || 'Login failed. Please try again.');
           return;
         }
   
+        // Save user session data
         this._model.saveUserSession(
           response.loginResult.token,
           response.loginResult.userId,
@@ -53,6 +55,13 @@ export default class LoginPresenter {
   
       if (!password) {
         this._view.showError('Password is required');
+        return false;
+      }
+  
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        this._view.showError('Please enter a valid email address');
         return false;
       }
   

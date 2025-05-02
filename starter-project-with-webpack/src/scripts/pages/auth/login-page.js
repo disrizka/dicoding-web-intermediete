@@ -1,7 +1,7 @@
-import LoginView from './login-view';
-import LoginPresenter from '../../presenters/login-presenter';
-import AuthModel from '../../models/auth-model';
-import * as api from '../../data/api';
+import LoginView from '../../views/auth/login-view.js';
+import LoginPresenter from '../../presenters/login-presenter.js';
+import AuthModel from '../../models/auth-model.js';
+import * as api from '../../data/api.js';
 
 export default class LoginPage {
   constructor() {

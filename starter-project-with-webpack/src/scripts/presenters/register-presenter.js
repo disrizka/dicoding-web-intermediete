@@ -23,13 +23,13 @@ export default class RegisterPresenter {
   
         const response = await this._model.register(name, email, password);
   
+        this._view.hideLoading();
+  
         if (response.error) {
-          this._view.hideLoading();
-          this._view.showError(response.message);
+          this._view.showError(response.message || 'Registration failed. Please try again.');
           return;
         }
   
-        this._view.hideLoading();
         this._view.showSuccess('Registration successful! Redirecting to login...');
         this._view.resetForm();
   
@@ -44,13 +44,20 @@ export default class RegisterPresenter {
     }
   
     _validateInput(name, email, password) {
-      if (!name) {
+      if (!name || name.trim() === '') {
         this._view.showError('Name is required');
         return false;
       }
   
-      if (!email) {
+      if (!email || email.trim() === '') {
         this._view.showError('Email is required');
+        return false;
+      }
+  
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        this._view.showError('Please enter a valid email address');
         return false;
       }
   

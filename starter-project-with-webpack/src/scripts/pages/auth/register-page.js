@@ -1,7 +1,7 @@
-import RegisterView from './register-view';
-import RegisterPresenter from '../../presenters/register-presenter';
-import AuthModel from '../../models/auth-model';
-import * as api from '../../data/api';
+import RegisterView from '../../views/auth/register-view.js';
+import RegisterPresenter from '../../presenters/register-presenter.js';
+import AuthModel from '../../models/auth-model.js';
+import * as api from '../../data/api.js';
 
 export default class RegisterPage {
   constructor() {

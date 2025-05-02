@@ -14,7 +14,7 @@ export default class AuthModel {
         return response;
       } catch (error) {
         console.error('Login error:', error);
-        throw new Error('An error occurred during login. Please try again.');
+        throw new Error('Connection error. Please check your internet connection and try again.');
       }
     }
   
@@ -24,7 +24,7 @@ export default class AuthModel {
         return response;
       } catch (error) {
         console.error('Registration error:', error);
-        throw new Error('An error occurred during registration. Please try again.');
+        throw new Error('Connection error. Please check your internet connection and try again.');
       }
     }
   
